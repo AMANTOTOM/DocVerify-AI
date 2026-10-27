@@ -1,0 +1,3 @@
+# Product Vision
+
+For university admissions staff at German universities who need a faster and more consistent way to verify international student applications, DocVerify AI is an AI powered document verification web application that lets staff check applications faster and clear a large backlog in days instead of weeks, applying the same rules every time. Unlike manual checking or campus management systems that manage applications but don't check documents against admission rules, our product explains every finding with source citations and confidence scores, and leaves the final decision with a human.
