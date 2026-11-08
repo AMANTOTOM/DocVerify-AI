@@ -1,0 +1,4 @@
+   #these are the list of packages that my project needs . so that anyone can install them using pip install -r requirements.txt 
+   
+   fastapi==0.162.2
+   uvicorn==0.54.0
