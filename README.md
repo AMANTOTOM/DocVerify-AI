@@ -24,6 +24,18 @@ Phase 2: Git workflow and backend skeleton in progress.
    ```
 4. Open http://127.0.0.1:8000 in your browser. You should see a message that the backend is running.
 
+## Run with Docker
+
+Start the backend and MongoDB together:
+
+```bash
+docker compose up --build
+```
+
+The API is then available at http://localhost:8000/docs
+
+Stop everything with `docker compose down`.
+
 ## this is the project structure
 
 - `backend/` - the Python (FastAPI) backend
