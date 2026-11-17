@@ -7,6 +7,7 @@ Course project for MIT 5.2 - Senior IT Project.
 ## Status
 
 Phase 2: Git workflow and backend skeleton in progress.
+Phase 2: Git workflow, Docker setup and CI done. Core features in progress.
 
 ## How to run the backend
 
@@ -36,6 +37,12 @@ The API is then available at http://localhost:8000/docs
 
 Stop everything with `docker compose down`.
 
+This starts three services:
+
+- backend (FastAPI): http://localhost:8000
+- MongoDB (database): port 27017
+- Qdrant (vector database): http://localhost:6333/dashboard
+
 ## this is the project structure
 
 - `backend/` - the Python (FastAPI) backend
@@ -43,7 +50,7 @@ Stop everything with `docker compose down`.
 
 ## following are my lanned tech stack
 
-Python, FastAPI, MongoDB, Docker
+Python, FastAPI, MongoDB, Docker, qdrant(vector database)
 
 ## Backlog
 
