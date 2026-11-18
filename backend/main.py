@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from database import users
-from fastapi import FastAPI
 
 app = FastAPI()
 
