@@ -6,6 +6,8 @@ services:
     depends_on:
       - mongo
       - qdrant
+    environment:
+      MONGO_URL: mongodb://mongo:27017
 
   mongo:
     image: mongo:7
@@ -23,3 +25,5 @@ services:
 volumes:
   mongo-data:
   qdrant-data:
+
+   
