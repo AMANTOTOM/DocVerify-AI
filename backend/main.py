@@ -1,8 +1,10 @@
+from typing import Annotated
+
 import bcrypt
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 
-from auth import create_token
+from auth import create_token, get_current_user, require_role
 from database import users
 
 app = FastAPI()
@@ -43,3 +45,16 @@ def login(data: LoginRequest):
 
     token = create_token(email, user["role"])
     return {"access_token": token, "token_type": "bearer", "role": user["role"]}
+
+CurrentUser = Annotated[dict, Depends(get_current_user)]
+AdminUser = Annotated[dict, Depends(require_role("admin"))]
+
+
+@app.get("/me")
+def me(user: CurrentUser):
+    return user
+
+
+@app.get("/admin/users")
+def list_users(user: AdminUser):
+    return [{"email": u["email"], "role": u["role"]} for u in users.find()]
