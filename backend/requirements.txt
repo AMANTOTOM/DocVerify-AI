@@ -5,3 +5,4 @@
    pymongo
    bcrypt
    pyjwt
+   python-multipart
