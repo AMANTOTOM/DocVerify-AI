@@ -7,9 +7,11 @@ from pydantic import BaseModel
 from auth import create_token, get_current_user, require_role
 from database import users
 from documents import router as documents_router
+from reviewer import router as reviewer_router
 
 app = FastAPI()
 app.include_router(documents_router)
+app.include_router(reviewer_router)
 
 @app.get("/")
 def home():
