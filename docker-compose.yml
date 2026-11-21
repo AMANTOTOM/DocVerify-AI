@@ -8,13 +8,17 @@ services:
       - qdrant
     environment:
       MONGO_URL: mongodb://mongo:27017
-    SECRET_KEY: ${SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - uploads-data:/app/uploads
+
   mongo:
     image: mongo:7
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+
   qdrant:
     image: qdrant/qdrant
     ports:
@@ -25,5 +29,4 @@ services:
 volumes:
   mongo-data:
   qdrant-data:
-
- 
+  uploads-data:
