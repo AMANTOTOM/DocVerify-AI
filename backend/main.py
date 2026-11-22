@@ -1,9 +1,11 @@
+import os
 from typing import Annotated
 
 import bcrypt
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 
+from admin import router as admin_router
 from auth import create_token, get_current_user, require_role
 from database import users
 from documents import router as documents_router
@@ -12,6 +14,7 @@ from reviewer import router as reviewer_router
 app = FastAPI()
 app.include_router(documents_router)
 app.include_router(reviewer_router)
+app.include_router(admin_router)
 
 @app.get("/")
 def home():
@@ -31,8 +34,11 @@ def register(data: RegisterRequest):
     if users.find_one({"email": email}):
         raise HTTPException(status_code=409, detail="This email is already registered")
 
+        admin_email = os.getenv("ADMIN_EMAIL", "").strip().lower()
+    role = "admin" if admin_email and email == admin_email else "applicant"
+
     password_hash = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt())
-    users.insert_one({"email": email, "password_hash": password_hash, "role": "applicant"})
+    users.insert_one({"email": email, "password_hash": password_hash, "role": role})
     return {"message": "Account created"}
 
 class LoginRequest(BaseModel):

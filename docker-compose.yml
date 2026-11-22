@@ -9,6 +9,8 @@ services:
     environment:
       MONGO_URL: mongodb://mongo:27017
       SECRET_KEY: ${SECRET_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+
     volumes:
       - uploads-data:/app/uploads
 
