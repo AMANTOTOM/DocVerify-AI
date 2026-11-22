@@ -10,7 +10,7 @@ services:
       MONGO_URL: mongodb://mongo:27017
       SECRET_KEY: ${SECRET_KEY}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
-
+    
     volumes:
       - uploads-data:/app/uploads
 
@@ -27,6 +27,12 @@ services:
       - "6333:6333"
     volumes:
       - qdrant-data:/qdrant/storage
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend  
 
 volumes:
   mongo-data:
