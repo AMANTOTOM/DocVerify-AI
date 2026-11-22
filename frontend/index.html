@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DocVerify AI</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    section { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 6px; }
+    input, select, button { margin: 0.25rem 0; padding: 0.4rem; }
+    .error { color: #b00020; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>DocVerify AI</h1>
+  <p id="message"></p>
+
+  <section id="login-box">
+    <h2>Log in or register</h2>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password (min. 8 characters)">
+    <button onclick="guard(login)">Log in</button>
+    <button onclick="guard(register)">Register</button>
+  </section>
+
+  <section id="user-box" class="hidden">
+    <span id="who"></span>
+    <button onclick="logout()">Log out</button>
+  </section>
+
+  <section id="applicant-box" class="hidden">
+    <h2>My applications</h2>
+    <button onclick="guard(createApplication)">New application</button>
+    <div id="my-applications"></div>
+    <h3>Upload documents</h3>
+    <select id="application-select"></select>
+    <select id="document-type">
+      <option>degree certificate</option>
+      <option>transcript</option>
+      <option>language certificate</option>
+      <option>passport</option>
+      <option>cv</option>
+      <option>other</option>
+    </select>
+    <input id="files" type="file" multiple accept=".pdf,.jpg,.jpeg,.png">
+    <input id="notes" placeholder="Notes (optional)">
+    <button onclick="guard(upload)">Upload</button>
+  </section>
+
+  <section id="reviewer-box" class="hidden">
+    <h2>Review dashboard</h2>
+    <button onclick="guard(loadReview)">Refresh</button>
+    <div id="review-list"></div>
+  </section>
+
+  <script>
+    const API = "/api";
+    let token = localStorage.getItem("token");
+    let role = localStorage.getItem("role");
+
+    function esc(text) {
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function show(text, isError) {
+      const box = document.getElementById("message");
+      box.textContent = text;
+      box.className = isError ? "error" : "";
+    }
+
+    async function guard(fn) {
+      try {
+        show("");
+        await fn();
+      } catch (error) {
+        show(error.message, true);
+      }
+    }
+
+    async function api(path, options = {}) {
+      options.headers = Object.assign({}, options.headers);
+      if (token) options.headers["Authorization"] = "Bearer " + token;
+      const response = await fetch(API + path, options);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(typeof data.detail === "string" ? data.detail : "Request failed");
+      }
+      return data;
+    }
+
+    function jsonBody(object) {
+      return {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(object),
+      };
+    }
+
+    function toggle(id, visible) {
+      document.getElementById(id).classList.toggle("hidden", !visible);
+    }
+
+    function refresh() {
+      const isReviewer = role === "reviewer" || role === "admin";
+      toggle("login-box", !token);
+      toggle("user-box", Boolean(token));
+      toggle("applicant-box", Boolean(token) && role === "applicant");
+      toggle("reviewer-box", Boolean(token) && isReviewer);
+      document.getElementById("who").textContent = token ? "Logged in as " + role : "";
+      if (token && role === "applicant") guard(loadMine);
+      if (token && isReviewer) guard(loadReview);
+    }
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const data = await api("/login", jsonBody({ email, password }));
+      token = data.access_token;
+      role = data.role;
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+      refresh();
+    }
+
+    async function register() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      await api("/register", jsonBody({ email, password }));
+      await login();
+    }
+
+    function logout() {
+      token = null;
+      role = null;
+      localStorage.clear();
+      refresh();
+    }
+
+    async function createApplication() {
+      await api("/applications", { method: "POST" });
+      await loadMine();
+    }
+
+    async function loadMine() {
+      const applications = await api("/applications");
+      document.getElementById("my-applications").innerHTML = applications.map((a, i) =>
+        "<p><b>Application " + (i + 1) + "</b> (" + esc(a.status) + ")<ul>" +
+        a.documents.map((d) => "<li>" + esc(d.document_type) + ": " + esc(d.filename) +
+          " (" + esc(d.status) + ")</li>").join("") + "</ul></p>").join("") || "No applications yet.";
+      document.getElementById("application-select").innerHTML = applications.map((a, i) =>
+        "<option value='" + esc(a.id) + "'>Application " + (i + 1) + "</option>").join("");
+    }
+
+    async function upload() {
+      const id = document.getElementById("application-select").value;
+      const files = document.getElementById("files").files;
+      if (!id || files.length === 0) throw new Error("Pick an application and at least one file");
+      const form = new FormData();
+      form.append("document_type", document.getElementById("document-type").value);
+      form.append("notes", document.getElementById("notes").value);
+      for (const file of files) form.append("files", file);
+      await api("/applications/" + id + "/documents", { method: "POST", body: form });
+      show("Uploaded");
+      await loadMine();
+    }
+
+    async function loadReview() {
+      const applications = await api("/review/applications");
+      document.getElementById("review-list").innerHTML = applications.map((a) =>
+        "<div><b>" + esc(a.owner) + "</b> – " + esc(a.status) + " – " +
+        a.document_count + " documents <button onclick=\"guard(() => openApplication('" +
+        esc(a.id) + "'))\">Open</button><div id='app-" + esc(a.id) + "'></div></div>").join("") ||
+        "No applications yet.";
+    }
+
+    async function openApplication(id) {
+      const a = await api("/review/applications/" + id);
+      const buttons = (docId, label, status) =>
+        "<button onclick=\"guard(() => reviewDocument('" + docId + "','" + status + "','" + id +
+        "'))\">" + label + "</button> ";
+      document.getElementById("app-" + id).innerHTML = a.documents.map((d) =>
+        "<p>" + esc(d.document_type) + ": " + esc(d.filename) + " (" + esc(d.status) + ") " +
+        buttons(d.id, "Approve", "Approved") + buttons(d.id, "Reject", "Rejected") + "</p>").join("") +
+        "<button onclick=\"guard(() => setStatus('" + id + "','Approved'))\">Approve application</button> " +
+        "<button onclick=\"guard(() => setStatus('" + id + "','Rejected'))\">Reject application</button>";
+    }
+
+    async function reviewDocument(documentId, status, applicationId) {
+      const comment = prompt("Comment (optional)") || "";
+      await api("/review/documents/" + documentId, Object.assign(jsonBody({ status, comment }), { method: "PATCH" }));
+      await openApplication(applicationId);
+    }
+
+    async function setStatus(applicationId, status) {
+      await api("/review/applications/" + applicationId, Object.assign(jsonBody({ status }), { method: "PATCH" }));
+      await loadReview();
+    }
+
+    refresh();
+  </script>
+</body>
+</html>
