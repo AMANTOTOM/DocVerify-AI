@@ -21,7 +21,8 @@ jobs:
         ports:
           - 27017:27017
     env:
-      SECRET_KEY: ci-test-secret-key-not-a-real-secret-123    defaults:
+      SECRET_KEY: ci-test-secret-key-not-a-real-secret-123
+    defaults:
       run:
         working-directory: backend
     steps:
