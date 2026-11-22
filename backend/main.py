@@ -34,7 +34,7 @@ def register(data: RegisterRequest):
     if users.find_one({"email": email}):
         raise HTTPException(status_code=409, detail="This email is already registered")
 
-        admin_email = os.getenv("ADMIN_EMAIL", "").strip().lower()
+    admin_email = os.getenv("ADMIN_EMAIL", "").strip().lower()
     role = "admin" if admin_email and email == admin_email else "applicant"
 
     password_hash = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt())
