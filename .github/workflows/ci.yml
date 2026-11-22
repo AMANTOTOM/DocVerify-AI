@@ -9,15 +9,19 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Get the code
-        uses: actions/checkout@v4
-
-      - name: Build the backend Docker image
+      - uses: actions/checkout@v4
+      - name: Build backend image
         run: docker build -t docverify-backend ./backend
 
   lint-and-test:
     runs-on: ubuntu-latest
-    defaults:
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    env:
+      SECRET_KEY: ci-test-secret-key-not-a-real-secret-123    defaults:
       run:
         working-directory: backend
     steps:
@@ -35,5 +39,8 @@ jobs:
       - name: Check code style with ruff
         run: ruff check .
 
-      - name: Run tests
-        run: pytest
+      - name: Unit tests
+        run: pytest test_main.py test_unit.py -v
+
+      - name: Integration tests
+        run: pytest test_integration.py -v
