@@ -99,3 +99,15 @@ I worked alone, so  each pull request has my self-review comment.The dates are m
 | 22 Nov | 4 | #32 | Added admin functions and first admin setup |
 | 22 Nov | 4 | #33 | Added unit and integration tests to CI |
 | 22 Nov | 4 | #34 | Added the frontend container with a simple web page |
+
+
+## Phase 3 sprint plan (AI features)
+
+Phase 3 is due on 13 December. The last sprint ends on 10 December, so 11 to 13 December are a buffer for fixes, documentation and the final checks. No new features are started in the buffer.
+
+| Sprint | Dates | Issues | Goal |
+| --- | --- | --- | --- |
+| Sprint 5 | 23 to 28 Nov | #2, #6 | Read text from uploaded documents (OCR), check the document checklist, detect blurry scans |
+| Sprint 6 | 29 Nov to 4 Dec | #3, #4, #5, #16 | Extract data with an LLM, knowledge base in Qdrant, institution and seal checks |
+| Sprint 7 | 5 to 10 Dec | #12, #13, #14, #17, #18 | RAG check with source citation, AI view for reviewers, confirm or override, audit log, AI settings |
+| Buffer | 11 to 13 Dec | none | Fixes, README, sprint documents, final checks, submission |
