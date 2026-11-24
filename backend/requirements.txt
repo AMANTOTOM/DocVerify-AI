@@ -6,3 +6,7 @@
    bcrypt
    pyjwt
    python-multipart
+   pytesseract
+   pillow
+   pymupdf
+   
