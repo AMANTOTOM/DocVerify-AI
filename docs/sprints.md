@@ -103,11 +103,15 @@ I worked alone, so  each pull request has my self-review comment.The dates are m
 
 ## Phase 3 sprint plan (AI features)
 
-Phase 3 is due on 13 December. The last sprint ends on 10 December, so 11 to 13 December are a buffer for fixes, documentation and the final checks. No new features are started in the buffer.
+Phase 3 is due on 13 December. The last sprint ends on 10 December, and 11 to 13 December are a buffer for fixes, documentation and the final checks. No new features are started in the buffer.
 
 | Sprint | Dates | Issues | Goal |
 | --- | --- | --- | --- |
-| Sprint 5 | 23 to 28 Nov | #2, #6 | Read text from uploaded documents (OCR), check the document checklist, detect blurry scans |
-| Sprint 6 | 29 Nov to 4 Dec | #3, #4, #5, #16 | Extract data with an LLM, knowledge base in Qdrant, institution and seal checks |
-| Sprint 7 | 5 to 10 Dec | #12, #13, #14, #17, #18 | RAG check with source citation, AI view for reviewers, confirm or override, audit log, AI settings |
+| Sprint 5 | 24 to 28 Nov | #2, #5, #6 | Core AI pipeline: OCR, document checklist check, blurry scan detection, LLM extraction with Ollama |
+| Sprint 6 | 29 Nov to 7 Dec | #4 | Knowledge base content, AI pipeline architecture, test cases and evaluation plan |
+| Sprint 7 | 8 to 10 Dec | #12, #13, #14 (stretch: #3, #16, #17, #18) | Qdrant, RAG check with source citation, reviewer AI view, confirm or override, tests |
 | Buffer | 11 to 13 Dec | none | Fixes, README, sprint documents, final checks, submission |
+
+Not planned for Phase 3 unless there is time: #9 account and data deletion, #10 filter the review queue.
+
+Every issue is worked on in small pull requests. A pull request that finishes a story says "Closes #N", and the steps before it say "Part of #N". Work is committed on the day it is done.
