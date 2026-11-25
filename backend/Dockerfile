@@ -1,6 +1,11 @@
 # Start from a small Python image
 FROM python:3.12-slim
 
+# Install Tesseract (OCR) with English and German language data
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-deu \
+    && rm -rf /var/lib/apt/lists/*
+
 # Work inside the /app folder in the container
 WORKDIR /app
 
